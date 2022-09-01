@@ -2,7 +2,7 @@ package models;
 
 import java.util.Objects;
 
-public class NGram {
+public class NGram implements Comparable<NGram>{
 	public String ngram;
 	public int size;
 	public int unique;
@@ -83,5 +83,16 @@ public class NGram {
 	public String toString() {
 		return "NGram [ngram=" + ngram + ", size=" + size + ", unique=" + unique + ", total=" + total + "]";
 	}
+
+	@Override
+	public int compareTo(NGram ngram) {
+		int result = this.size - ngram.size;
+		if(result == 0) {
+			result = this.ngram.compareTo(ngram.getNgram());
+		}
+		return result;
+	}
+	
+	
 
 }

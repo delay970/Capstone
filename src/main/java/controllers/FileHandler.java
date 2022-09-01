@@ -29,7 +29,7 @@ public class FileHandler {
 			String temp;
 			while ((temp = reader.readLine()) != null) {
 				context.append(temp);
-				context.append("\n"); // this could be causing problems
+				//context.append("\n"); // this could be causing problems
 			}
 
 			return context.toString();

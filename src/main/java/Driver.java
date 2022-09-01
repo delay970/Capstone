@@ -1,5 +1,7 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import controllers.FileHandler;
 import models.NGram;
@@ -10,18 +12,25 @@ public class Driver {
 	public static void main(String[] args) {
 		String folderPath = "C:\\Users\\foxma\\Documents\\School\\CompSci\\Capstone\\sutras\\";
 
-		String oldCleanedPath = "C:\\Users\\foxma\\Documents\\School\\CompSci\\Capstone\\Old_Cleaned";
+		String oldCleanedPath = "Old_Cleaned";
 
 		String[] paths = FileHandler.getFilesInFolder(oldCleanedPath);
 		
-		String context = FileHandler.readFile(paths[2]);
+		String context = FileHandler.readFile(paths[4]);
 		String context2 = FileHandler.readFile(paths[3]);
 		
-		Map<String, NGram> map = FormulaFinder.findFormulas(context, context2, 3);
+		Map<String, NGram> map = FormulaFinder.findFormulas(context, context2, 30);
+		//Map<String, NGram> map = FormulaFinder.findRepatitions(context, 3);
 		
-		for(Entry<String, NGram> ngram : map.entrySet()) {
-			System.out.println(ngram.getValue());
+		List<NGram> results = new ArrayList<>(map.values());
+		Collections.sort(results, Collections.reverseOrder());
+		
+		FormulaFinder.cleanResults(results);
+		
+		for(NGram ngram : results) {
+			System.out.println(ngram);
 		}
+
 	}
 
 }

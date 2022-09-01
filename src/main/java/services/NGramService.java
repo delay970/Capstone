@@ -23,7 +23,7 @@ public class NGramService {
 
 		Map<String, NGram> ngrams = new HashMap<String, NGram>();
 
-		for (int i = 0; i < context.size() - n; i++) {
+		for (int i = 0; i < context.size() - n+1; i++) {
 			StringBuilder temp = new StringBuilder();
 
 			// builds ngram starting at word i
@@ -31,6 +31,7 @@ public class NGramService {
 				temp.append(context.get(j) + " ");
 			}
 			temp.deleteCharAt(temp.length() - 1);
+
 			NGram ngram = ngrams.get(temp.toString());
 
 			// increments count if exists otherwises adds new ngram to map
@@ -40,14 +41,20 @@ public class NGramService {
 				ngram = new NGram(temp.toString(), n, 1, 1);
 				ngrams.put(temp.toString(), ngram);
 			}
+
+			
 		}
 
 		return ngrams;
 	}
 
-	
-	//This fucntion seems to not have the correct unique count for sub patterns when in a larger pattern multiple times 
-	//unique count is also wrong if larger formlua is made up of the same overlaping subformula
+	// This fucntion seems to not have the correct unique count for sub patterns
+	// when in a larger pattern multiple times
+	// unique count is also wrong if larger formlua is made up of the same
+	// overlaping subformula
+	// this seems to be an issues where if a formula starts and ends with the same
+	// sub formula it misses a subtraction that it should have
+	//
 	public Map<String, NGram> mergeUp(Map<String, NGram> ngrams1, Map<String, NGram> ngrams2) {
 
 		Map<String, NGram> results = new HashMap<String, NGram>();
@@ -106,23 +113,23 @@ public class NGramService {
 
 	public Map<String, NGram> findCommonElements(Map<String, NGram> ngrams1, Map<String, NGram> ngrams2) {
 		Map<String, NGram> results = new HashMap<String, NGram>();
-		
-		//gets common elements
+
+		// gets common elements
 		Set<String> keySet = ngrams1.keySet();
 		keySet.retainAll(ngrams2.keySet());
-		
-		//selects count with fewest apearences and rebuilds set to map
-		for(String key: keySet) {
+
+		// selects count with fewest apearences and rebuilds set to map
+		for (String key : keySet) {
 			NGram ng1 = ngrams1.get(key);
 			NGram ng2 = ngrams2.get(key);
-			if(ng1.getTotal() < ng2.getTotal()) {
+			if (ng1.getTotal() < ng2.getTotal()) {
 				results.put(key, ng1);
-			}else {
+			} else {
 				results.put(key, ng2);
 			}
-			
+
 		}
-		
+
 		return results;
 	}
 
