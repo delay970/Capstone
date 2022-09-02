@@ -3,10 +3,10 @@ package models;
 import java.util.Objects;
 
 public class NGram implements Comparable<NGram>{
-	public String ngram;
-	public int size;
-	public int unique;
-	public int total;
+	private String ngram;
+	private int size;
+	private int unique;
+	private int total;
 
 	public NGram() {
 		super();
@@ -25,9 +25,6 @@ public class NGram implements Comparable<NGram>{
 		total++;
 	}
 	
-	public void decrement() {
-		unique--;
-	}
 	
 	public String getNgram() {
 		return ngram;

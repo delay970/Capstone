@@ -20,7 +20,7 @@ public class Driver {
 		String context2 = FileHandler.readFile(paths[3]);
 		
 		Map<String, NGram> map = FormulaFinder.findFormulas(context, context2, 30);
-		//Map<String, NGram> map = FormulaFinder.findRepatitions(context, 3);
+		//Map<String, NGram> map = FormulaFinder.findRepetitions(context, 3);
 		
 		List<NGram> results = new ArrayList<>(map.values());
 		Collections.sort(results, Collections.reverseOrder());
