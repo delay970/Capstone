@@ -63,6 +63,12 @@ public class NGramService {
 		// ngrams1 = ngrams of size n.
 		// ngrams2 = ngrams of size n+1.
 
+		// if ngrams2 is empty there is nothing to compare then nothing will be
+		// subtracted from the counts of ngrams1
+		if (ngrams2.isEmpty()) {
+			return ngrams1;
+		}
+
 		// Results set to be returned.
 		Map<String, NGram> results = new HashMap<String, NGram>();
 

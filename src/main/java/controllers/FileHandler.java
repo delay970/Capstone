@@ -19,7 +19,7 @@ import models.Sutra;
 
 public class FileHandler {
 
-	public static String readFile(String path) {
+	public String readFile(String path) {
 
 		try (FileInputStream fis = new FileInputStream(path);
 				InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
@@ -40,7 +40,7 @@ public class FileHandler {
 		return null;
 	}
 
-	public static void writeFile(String context) {
+	public void writeFile(String context) {
 
 		String path = "cleaned\\temp.txt";
 
@@ -55,7 +55,7 @@ public class FileHandler {
 		}
 	}
 
-	public static String[] getFilesInFolder(String folderPath) {
+	public String[] getFilesInFolder(String folderPath) {
 		String[] paths = null;
 		try (Stream<Path> p = Files.walk(Paths.get(folderPath))) {
 			paths = p.filter(Files::isRegularFile).map(Path::toString).toArray(String[]::new);

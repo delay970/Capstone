@@ -10,22 +10,23 @@ import services.FormulaFinder;
 public class Driver {
 
 	public static void main(String[] args) {
-		String folderPath = "C:\\Users\\foxma\\Documents\\School\\CompSci\\Capstone\\sutras\\";
-
 		String oldCleanedPath = "Old_Cleaned";
+		
+		FileHandler fileHandeler = new FileHandler();
+		FormulaFinder formulaFinder = new FormulaFinder();
 
-		String[] paths = FileHandler.getFilesInFolder(oldCleanedPath);
+		String[] paths = fileHandeler.getFilesInFolder(oldCleanedPath);
 		
-		String context = FileHandler.readFile(paths[4]);
-		String context2 = FileHandler.readFile(paths[3]);
+		String context = fileHandeler.readFile(paths[0]);
+		String context2 = fileHandeler.readFile(paths[1]);
 		
-		Map<String, NGram> map = FormulaFinder.findFormulas(context, context2, 30);
-		//Map<String, NGram> map = FormulaFinder.findRepetitions(context, 3);
+		Map<String, NGram> map = formulaFinder.findFormulas(context, context2, 3);
+		//Map<String, NGram> map = formulaFinder.findRepetitions(context, 3);
 		
 		List<NGram> results = new ArrayList<>(map.values());
 		Collections.sort(results, Collections.reverseOrder());
 		
-		FormulaFinder.cleanResults(results);
+		formulaFinder.cleanResults(results);
 		
 		for(NGram ngram : results) {
 			System.out.println(ngram);

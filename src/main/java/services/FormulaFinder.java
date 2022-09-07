@@ -3,14 +3,13 @@ package services;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import models.NGram;
 
 public class FormulaFinder {
 
 	// This Method is used to find the repetitions in a single document.
-	public static Map<String, NGram> findRepetitions(String text, int minSize) {
+	public Map<String, NGram> findRepetitions(String text, int minSize) {
 
 		Map<String, NGram> results = new HashMap<String, NGram>();
 
@@ -18,25 +17,30 @@ public class FormulaFinder {
 
 		List<String> context = ngramService.stringToList(text);
 
-		// This loop creates ngrams for every value of n starting at minsize.
+		Map<String, NGram> ngrams1 = ngramService.createNGrams(context, minSize);
+
+		// This removes any ngram if it only occurs one time as it can't be a
+		// repetition.
+		ngrams1.values().removeIf(ngram -> 1 == ngram.getTotal());
+
+		// This loop creates ngrams for every value of n+1 starting at minsize.
 		// It will never run context.size() times as it breaks after it finds the
 		// largest repetition.
 		for (int i = minSize; i < context.size(); i++) {
-			Map<String, NGram> ngrams1 = ngramService.createNGrams(context, i);
-
-			// This removes any ngram if it only occurs one time as it can't be a
-			// repetition.
-			ngrams1.values().removeIf(ngram -> 1 == ngram.getTotal());
-
-			Map<String, NGram> ngrams2 = ngramService.createNGrams(context, i + 1);
-			ngrams2.values().removeIf(ngram -> 1 == ngram.getTotal());
 
 			// if ngrams1 is empty than there are no larger repetitions
 			if (ngrams1.isEmpty()) {
 				break;
 			}
+			
+			Map<String, NGram> ngrams2 = ngramService.createNGrams(context, i + 1);
+			ngrams2.values().removeIf(ngram -> 1 == ngram.getTotal());
 
 			Map<String, NGram> temp = ngramService.mergeUp(ngrams1, ngrams2);
+
+			// Assigning ngrams1 to be ngrams2 so it doesn't need to recompute ngrams i
+			// each iteration
+			ngrams1 = ngrams2;
 
 			if (temp.isEmpty()) {
 				continue;
@@ -54,34 +58,38 @@ public class FormulaFinder {
 	// The main difference is this function looks for common ngrams between two
 	// documents while the first function loops for repeated elements in one
 	// document.
-	public static Map<String, NGram> findFormulas(String text1, String text2, int minSize) {
+	public Map<String, NGram> findFormulas(String text1, String text2, int minSize) {
 		Map<String, NGram> results = new HashMap<String, NGram>();
 		NGramService ngramService = new NGramService();
 
 		List<String> context1 = ngramService.stringToList(text1);
 		List<String> context2 = ngramService.stringToList(text2);
 
-		// This loop creates ngrams for every value of n starting at minsize.
+		// Get ngrams of docs 1 and 2 of length minsize
+		Map<String, NGram> doc1ngrams = ngramService.createNGrams(context1, minSize);
+		Map<String, NGram> doc2ngrams = ngramService.createNGrams(context2, minSize);
+
+		Map<String, NGram> ngrams1 = ngramService.findCommonElements(doc1ngrams, doc2ngrams);
+		
+		// This loop creates ngrams for every value of n+1 starting at minsize.
 		// It will only run context1.size() times if the text of doc one is a subtext of
 		// doc two.
 		for (int i = minSize; i < context1.size(); i++) {
-			// Get ngrams of docs 1 and 2 of length i
-			Map<String, NGram> doc1ngrams = ngramService.createNGrams(context1, i);
-			Map<String, NGram> doc2ngrams = ngramService.createNGrams(context2, i);
-
-			Map<String, NGram> ngrams1 = ngramService.findCommonElements(doc1ngrams, doc2ngrams);
-
+			
+			if (ngrams1.isEmpty()) {
+				break;
+			}
+			
 			doc1ngrams = ngramService.createNGrams(context1, i + 1);
 			doc2ngrams = ngramService.createNGrams(context2, i + 1);
 
 			Map<String, NGram> ngrams2 = ngramService.findCommonElements(doc1ngrams, doc2ngrams);
-
-			if (ngrams1.isEmpty()) {
-				break;
-			}
-
 			Map<String, NGram> temp = ngramService.mergeUp(ngrams1, ngrams2);
 
+			// Assigning ngrams1 to be ngrams2 so it doesn't need to recompute ngrams i
+			// each iteration
+			ngrams1 = ngrams2;
+			
 			if (temp.isEmpty()) {
 				continue;
 
@@ -97,9 +105,7 @@ public class FormulaFinder {
 	// This method looks at each result to see if it was one of the rare cases where
 	// it missed both a right and a left count.
 	// Results must be sorted from largest to smallest in order to work
-	public static void cleanResults(List<NGram> results) {
-		NGramService ngramService = new NGramService();
-
+	public void cleanResults(List<NGram> results) {
 		// loop through results starting with largest
 		for (int i = 0; i < results.size(); i++) {
 
@@ -145,7 +151,7 @@ public class FormulaFinder {
 			ngram.setUnique(total);
 
 		}
-		//remove false positive results
+		// remove false positive results
 		results.removeIf(ngram -> ngram.getUnique() == 0);
 	}
 
