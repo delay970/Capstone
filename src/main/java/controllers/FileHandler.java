@@ -28,11 +28,12 @@ public class FileHandler {
 			StringBuilder context = new StringBuilder();
 			String temp;
 			while ((temp = reader.readLine()) != null) {
-				context.append(temp);
-				//context.append("\n"); // this could be causing problems
+				context.append(temp + " ");
+				context.append("\n"); // this could be causing problems
 			}
-
-			return context.toString();
+			//remove last char from 
+			String result = context.toString();
+			return result.trim();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -42,7 +43,7 @@ public class FileHandler {
 
 	public void writeFile(String context) {
 
-		String path = "cleaned\\temp.txt";
+		String path = "Cleaned\\temp.txt";
 
 		try (FileOutputStream fos = new FileOutputStream(path);
 				OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);

@@ -1,27 +1,103 @@
 package services;
 
+import controllers.FileHandler;
+
 public class FileCleaner {
 
-	
-	public static void testModifyStringInMethod(String test) {
-		test = test.toLowerCase().replace('l', 'f');
-		System.out.println(test);
-	}
-	
-	public static void cleanLine(String Line) {
+	public void cleanFile(String Path) {
+		FileHandler fileHandler = new FileHandler();
+		String dirtyContext = fileHandler.readFile(Path);
 		
+		dirtyContext = removeHeader(dirtyContext);
+		
+		dirtyContext = removeSubstrings(dirtyContext);
+		
+		//dirtyContext = removeRomanNum(dirtyContext);
+		
+		dirtyContext = removeNumbers(dirtyContext);
+		
+		dirtyContext = removeCapitalization(dirtyContext);
+		
+		dirtyContext = removePunctuation(dirtyContext);
+		
+		//dirtyContext = removeExtraWhitespace(dirtyContext);
+
+		fileHandler.writeFile(dirtyContext);
 	}
-//	
-//	public String readFile(String filepath) {
-//		string data = "";
-//		ifstream reader;
-//		reader.open(filepath, ios::in);
-//		char c;
-//		while (reader.get(c)) {
-//			data += c;
-//		}
-//		return data;
-//	}
+
+	private String removeHeader(String context) {
+
+		int index = 0; // index that will be used to find what to remove
+
+		String header = "---";
+
+		index = context.lastIndexOf(header); // remove eveything above ---
+
+		if (index != -1) {
+			context = context.substring(index + header.length());
+		}
+
+		return context;
+	}
+
+	private String removeSubstrings(String context) {
+
+		String[] openSequence = { "*[", "/", "(", "[" };
+		String[] closeSequence = { "]*", "/", ")", "]" };
+
+		// ask about words in curly braces
+		context = deleteBetweenStrings(openSequence, closeSequence, context);
+		return context;
+	}
+
+	private String deleteBetweenStrings(String[] openArr, String[] closeArr, String context) {
+		StringBuilder contextBuilder = new StringBuilder(context);
+		for (int i = 0; i < openArr.length; i++) {
+			String open = openArr[i];
+			String close = closeArr[i];
+
+			int index = contextBuilder.indexOf(open);
+			while (index != -1) {
+				int index2 = contextBuilder.indexOf(close, index + 1); 
+				// index+1 ensures that if open == close it will look
+				//  for the next char and not have the same index
+				contextBuilder.delete(index, index2 + close.length());
+				index = contextBuilder.indexOf(open);
+			}
+			
+		}
+
+		return contextBuilder.toString();
+	}
+
+	private String removePunctuation(String context) {
+		context = context.replaceAll("-", " ");
+		return context.replaceAll("\\p{IsPunctuation}", "");
+
+	}
+
+	private String removeNumbers(String context) {
+
+		return context.replaceAll("\\d", "");
+
+	}
+
+	private String removeRomanNum(String context) {
+		return context.replaceAll("", "");
+
+	}
+
+	private String removeCapitalization(String context) {
+		return context.toLowerCase();
+
+	}
+
+	private String removeExtraWhitespace(String context) {
+		context = context.replaceAll("\\s", " ");
+		return context.trim().replaceAll(" +", " ");
+
+	}
+
 //
 //	public String cleanWord(string &word) {
 //		string cleanedWord = "";
@@ -58,7 +134,7 @@ public class FileCleaner {
 //			}
 //
 //			if (c < 0) {
-	
+
 //				cleanedWord += c;
 //				i++;
 //				switch (c) { // checks for unicode capitals and converts them to lowecase
