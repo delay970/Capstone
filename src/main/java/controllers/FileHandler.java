@@ -41,9 +41,7 @@ public class FileHandler {
 		return null;
 	}
 
-	public void writeFile(String context) {
-
-		String path = "Cleaned\\temp.txt";
+	public void writeFile(String context, String path) {
 
 		try (FileOutputStream fos = new FileOutputStream(path);
 				OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);

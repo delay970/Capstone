@@ -14,7 +14,11 @@ public class Driver {
 				
 		String[] paths = fileHandeler.getFilesInFolder(uncleanedFiles);
 		
-		fileCleaner.cleanFile(paths[0]);
+		for(String path: paths) {
+			fileCleaner.cleanFile(path);
+		}
+		
+		
 		
 //		String context = fileHandeler.readFile(paths[0]).toString();
 //		String context2 = fileHandeler.readFile(paths[1]).toString();
